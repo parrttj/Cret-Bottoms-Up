@@ -3,100 +3,52 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Volume Tracking</title>
+    <title>Volume Chart</title>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    <style>
-        body { font-family: Arial, sans-serif; }
-        h1 { text-align: center; }
-        .container { width: 80%; margin: auto; }
-        .chart-container { position: relative; margin: auto; height: 40vh; width: 80vw; }
-    </style>
 </head>
 <body>
-    <div class="container">
-        <h1>Volume Tracking Dashboard</h1>
-        <label for="dailyGoal">Set Daily Goal:</label>
-        <input type="number" id="dailyGoal" placeholder="Enter goal in volume"> <br><br>
-        <button id="setGoal">Set Goal</button> <br><br>
-
-        <h3>Quarterly Inputs</h3>
-        <label for="quarterInput">Quarter:</label>
-        <select id="quarterInput">
-            <option value="Q1">Q1</option>
-            <option value="Q2">Q2</option>
-            <option value="Q3">Q3</option>
-            <option value="Q4">Q4</option>
-        </select>
-        <input type="number" id="quarterVolume" placeholder="Enter volume"> <br>
-        <button id="addQuarterVolume">Add Volume</button> <br><br>
-
-        <h3>Progress Tracking</h3>
-        <div class="chart-container">
-            <canvas id="volumeChart"></canvas>
-        </div>
-        <button id="exportBtn">Export Data</button>
-        <h3>History Log</h3>
-        <div id="historyLog"></div>
-    </div>
-
+    <h1>Volume Chart</h1>
+    <canvas id="volumeChart" width="400" height="200"></canvas>
     <script>
-        let dailyGoal = 0;
-        let quarterlyVolumes = {Q1: 0, Q2: 0, Q3: 0, Q4: 0};
-        let history = [];
-        
-        document.getElementById('setGoal').onclick = function() {
-            dailyGoal = document.getElementById('dailyGoal').value;
-            alert('Daily goal set to: ' + dailyGoal);
-        };
-        
-        document.getElementById('addQuarterVolume').onclick = function() {
-            const quarter = document.getElementById('quarterInput').value;
-            const volume = parseInt(document.getElementById('quarterVolume').value);
-            if (quarterlyVolumes[quarter] !== undefined && !isNaN(volume)) {
-                quarterlyVolumes[quarter] += volume;
-                history.push(quarter + ': ' + volume);
-                updateHistoryLog();
-                updateChart();
-            }
-        };
-        
         const ctx = document.getElementById('volumeChart').getContext('2d');
-        let volumeChart = new Chart(ctx, {
+        const labels = ['Q1', 'Q2', 'Q3', 'Q4'];
+        const volumeData = [26.9, 21, 30.1, 22];  // Expected volume percentages
+        const cumulativeData = volumeData.map((val, index) => volumeData.slice(0, index + 1).reduce((a, b) => a + b, 0));
+
+        const chart = new Chart(ctx, {
             type: 'line',
             data: {
-                labels: ['Q1', 'Q2', 'Q3', 'Q4'],
-                datasets: [{
-                    label: 'Quarterly Volume',
-                    data: [quarterlyVolumes.Q1, quarterlyVolumes.Q2, quarterlyVolumes.Q3, quarterlyVolumes.Q4],
-                    borderColor: 'rgba(75, 192, 192, 1)',
-                    fill: false
-                }]
+                labels: labels,
+                datasets: [
+                    {
+                        label: 'Expected Volume per Quarter',
+                        data: volumeData,
+                        borderColor: 'blue',
+                        borderWidth: 2,
+                        fill: false
+                    },
+                    {
+                        label: 'Cumulative Daily Volume Trend',
+                        data: cumulativeData,
+                        borderColor: 'green',
+                        borderWidth: 2,
+                        fill: false
+                    }
+                ]
             },
             options: {
                 responsive: true,
                 scales: {
-                    y: { beginAtZero: true }
+                    y: {
+                        beginAtZero: true,
+                        title: {
+                            display: true,
+                            text: 'Volume (%)'
+                        }
+                    }
                 }
             }
         });
-        
-        function updateChart() {
-            volumeChart.data.datasets[0].data = [quarterlyVolumes.Q1, quarterlyVolumes.Q2, quarterlyVolumes.Q3, quarterlyVolumes.Q4];
-            volumeChart.update();
-        }
-        
-        function updateHistoryLog() {
-            const logContainer = document.getElementById('historyLog');
-            logContainer.innerHTML = history.join('<br>');
-        }
-        
-        document.getElementById('exportBtn').onclick = function() {
-            const blob = new Blob([JSON.stringify({ dailyGoal, quarterlyVolumes, history }, null, 2)], { type: 'application/json' });
-            const link = document.createElement('a');
-            link.href = URL.createObjectURL(blob);
-            link.download = 'volume-tracking-export.json';
-            link.click();
-        };
     </script>
 </body>
 </html>
