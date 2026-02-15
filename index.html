@@ -3,52 +3,66 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Volume Chart</title>
+    <title>Volume Tracking Application</title>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        body { font-family: Arial, sans-serif; }
+        .chart-container { width: 80%; margin: auto; }
+    </style>
 </head>
 <body>
-    <h1>Volume Chart</h1>
-    <canvas id="volumeChart" width="400" height="200"></canvas>
+    <h1>Comprehensive Volume Tracking Application</h1>
+    <h2>Quarterly Distribution</h2>
+    <p>Q1: 26.9%</p>
+    <p>Q2: 21%</p>
+    <p>Q3: 30.1%</p>
+    <p>Q4: 22%</p>
+    <h2>Expected Volumes</h2>
+    <input type="number" id="q1Volume" placeholder="Q1 Volume" />
+    <input type="number" id="q2Volume" placeholder="Q2 Volume" />
+    <input type="number" id="q3Volume" placeholder="Q3 Volume" />
+    <input type="number" id="q4Volume" placeholder="Q4 Volume" />
+    <button onclick="calculateVolumes()">Calculate</button>
+    <h2>Cumulative Chart</h2>
+    <div class="chart-container">
+        <canvas id="volumeChart"></canvas>
+    </div>
     <script>
-        const ctx = document.getElementById('volumeChart').getContext('2d');
-        const labels = ['Q1', 'Q2', 'Q3', 'Q4'];
-        const volumeData = [26.9, 21, 30.1, 22];  // Expected volume percentages
-        const cumulativeData = volumeData.map((val, index) => volumeData.slice(0, index + 1).reduce((a, b) => a + b, 0));
-
-        const chart = new Chart(ctx, {
-            type: 'line',
-            data: {
-                labels: labels,
-                datasets: [
-                    {
-                        label: 'Expected Volume per Quarter',
-                        data: volumeData,
-                        borderColor: 'blue',
+        function calculateVolumes() {
+            const q1 = document.getElementById('q1Volume').value;
+            const q2 = document.getElementById('q2Volume').value;
+            const q3 = document.getElementById('q3Volume').value;
+            const q4 = document.getElementById('q4Volume').value;
+            const total = parseFloat(q1) + parseFloat(q2) + parseFloat(q3) + parseFloat(q4);
+            const cumulative = [
+                parseFloat(q1),
+                parseFloat(q1) + parseFloat(q2),
+                parseFloat(q1) + parseFloat(q2) + parseFloat(q3),
+                total
+            ];
+            renderChart(cumulative);
+        }
+        function renderChart(cumulative) {
+            const ctx = document.getElementById('volumeChart').getContext('2d');
+            new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: ['Q1', 'Q2', 'Q3', 'Q4'],
+                    datasets: [{
+                        label: 'Cumulative Volume',
+                        data: cumulative,
+                        borderColor: 'rgba(75, 192, 192, 1)',
                         borderWidth: 2,
                         fill: false
-                    },
-                    {
-                        label: 'Cumulative Daily Volume Trend',
-                        data: cumulativeData,
-                        borderColor: 'green',
-                        borderWidth: 2,
-                        fill: false
-                    }
-                ]
-            },
-            options: {
-                responsive: true,
-                scales: {
-                    y: {
-                        beginAtZero: true,
-                        title: {
-                            display: true,
-                            text: 'Volume (%)'
-                        }
+                    }]
+                },
+                options: {
+                    scales: {
+                        y: { beginAtZero: true }
                     }
                 }
-            }
-        });
+            });
+        }
     </script>
 </body>
 </html>
