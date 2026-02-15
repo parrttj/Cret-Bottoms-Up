@@ -1,0 +1,36 @@
+.planner {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 10px;
+}
+
+.editable {
+  background-color: #e0f7fa;
+  border: 1px solid #00796b;
+  padding: 8px;
+}
+
+.read-only {
+  background-color: #f1f8e9;
+  border: 1px solid #c6dbb0;
+  padding: 8px;
+  color: #8c8c8c;
+}
+
+.chart {
+  max-width: 100%;
+  height: auto;
+  margin: 20px 0;
+}
+
+@media (max-width: 768px) {
+  .planner {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (max-width: 480px) {
+  .planner {
+    grid-template-columns: 1fr;
+  }
+}
